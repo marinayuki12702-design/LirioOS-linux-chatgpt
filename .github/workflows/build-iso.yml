@@ -42,8 +42,13 @@ jobs:
           sudo rm -f /etc/apt/sources.list
           sudo rm -rf /var/lib/apt/lists/*
           sudo apt-get -o Acquire::Retries=3 -o Acquire::https::Timeout=20 update
+          # Install xorriso from the official Ubuntu 24.04 package archive.
+          curl --fail --location --retry 3 \
+            https://es.archive.ubuntu.com/ubuntu/pool/main/libi/libisoburn/xorriso_1.5.6-1.1ubuntu3_amd64.deb \
+            -o /tmp/xorriso.deb
+          echo "7a0644fc4bc269d22ce8d27bd39e14b5849b532097265161938a9b216468f84d  /tmp/xorriso.deb" | sha256sum --check -
           sudo apt-get -o Acquire::Retries=3 -o Acquire::https::Timeout=20 install -y \
-            xorriso squashfs-tools rsync curl
+            /tmp/xorriso.deb squashfs-tools rsync curl
 
       - name: Download and verify Linux Mint XFCE
         env:

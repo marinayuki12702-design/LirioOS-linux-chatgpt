@@ -18,7 +18,7 @@ permissions:
 jobs:
   build:
     name: Build customized live ISO
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 180
     steps:
       - name: Checkout source
@@ -30,26 +30,9 @@ jobs:
       - name: Install build dependencies
         run: |
           set -euo pipefail
-          # Replace runner mirror configuration with a different public Ubuntu mirror.
-          # The previous run showed DNS failures for archive.ubuntu.com.
-          sudo tee /etc/apt/sources.list.d/ubuntu.sources > /dev/null <<'EOF'
-          Types: deb
-          URIs: https://mirrors.edge.kernel.org/ubuntu
-          Suites: noble noble-updates noble-backports noble-security
-          Components: main restricted universe multiverse
-          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-          EOF
-          sudo rm -f /etc/apt/sources.list
-          sudo rm -rf /var/lib/apt/lists/*
-          sudo apt-get -o Acquire::Retries=3 -o Acquire::https::Timeout=20 update
-          # Install xorriso directly from the same Ubuntu mirror whose indexes
-          # were fetched above. APT currently reports no candidate for this package.
-          curl --fail --location --retry 3 --retry-all-errors \
-            https://mirrors.edge.kernel.org/ubuntu/pool/main/libi/libisoburn/xorriso_1.5.6-1.1ubuntu3_amd64.deb \
-            --output /tmp/xorriso.deb
-          dpkg-deb --info /tmp/xorriso.deb >/dev/null
-          sudo apt-get -o Acquire::Retries=3 -o Acquire::https::Timeout=20 install -y \
-            /tmp/xorriso.deb squashfs-tools rsync curl
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xorriso squashfs-tools rsync curl
           xorriso -version
 
       - name: Download and verify Linux Mint XFCE

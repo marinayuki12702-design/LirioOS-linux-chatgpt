@@ -29,7 +29,8 @@ for tool in xorriso unsquashfs mksquashfs rsync sha256sum; do
 done
 
 rm -rf "$WORK_DIR"
-mkdir -p "$ISO_TREE" "$ROOTFS" "$OUTPUT_DIR"
+# unsquashfs creates ROOTFS itself; its destination must not exist yet.
+mkdir -p "$ISO_TREE" "$OUTPUT_DIR"
 
 echo "[1/6] Extracting source ISO..."
 xorriso -osirrox on -indev "$ISO_INPUT" -extract / "$ISO_TREE" >/dev/null 2>&1

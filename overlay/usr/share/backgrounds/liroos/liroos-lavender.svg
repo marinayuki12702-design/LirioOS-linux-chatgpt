@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFFFFF"/>
+    <stop offset=".52" stop-color="#E9DEFF"/>
+    <stop offset="1" stop-color="#C9AEF5"/>
+  </linearGradient>
+  <linearGradient id="ribbon" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFFFFF" stop-opacity=".18"/>
+    <stop offset=".5" stop-color="#A832E8" stop-opacity=".48"/>
+    <stop offset="1" stop-color="#FFFFFF" stop-opacity=".18"/>
+  </linearGradient>
+</defs>
+<rect width="1920" height="1080" fill="url(#bg)"/>
+<path d="M-120 900 C210 360 460 180 690 400 S1040 930 1280 620 S1620 100 2050 -40" fill="none" stroke="url(#ribbon)" stroke-width="150" stroke-linecap="round"/>
+<path d="M-80 1040 C260 650 470 490 690 650 S1030 1020 1300 780 S1660 300 2050 180" fill="none" stroke="#FFFFFF" stroke-opacity=".42" stroke-width="42" stroke-linecap="round"/>
+<path d="M-100 620 C240 180 500 80 730 300 S1030 740 1260 470 S1630 20 2010 -90" fill="none" stroke="#A832E8" stroke-opacity=".16" stroke-width="78" stroke-linecap="round"/>
+<g fill="#FFFFFF" opacity=".95">
+  <path d="M170 160l8 28 28 8-28 8-8 28-8-28-28-8 28-8z"/>
+  <path d="M420 470l6 20 20 6-20 6-6 20-6-20-20-6 20-6z"/>
+  <path d="M1500 760l7 23 23 7-23 7-7 23-7-23-23-7 23-7z"/>
+  <circle cx="310" cy="150" r="5"/><circle cx="980" cy="870" r="5"/><circle cx="1720" cy="300" r="4"/>
+</g>
+</svg>

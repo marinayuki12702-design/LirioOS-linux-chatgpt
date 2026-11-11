@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=LiroOS Session Setup
+Comment=Apply LiroOS desktop defaults
+Exec=/usr/bin/liro-session-setup
+OnlyShowIn=XFCE;
+X-GNOME-Autostart-enabled=true
+NoDisplay=false

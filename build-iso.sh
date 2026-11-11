@@ -43,6 +43,10 @@ echo "[3/6] Applying LiroOS files..."
 rsync -a "$ROOT_DIR/overlay/" "$ROOTFS/"
 
 echo "[4/6] Installing desktop components into live filesystem..."
+# Save the host DNS configuration before bind-mounting /run. On some runners
+# /etc/resolv.conf points into /run, which would make cp see identical source
+# and destination paths inside the chroot.
+cp -L /etc/resolv.conf "$WORK_DIR/resolv.conf"
 for d in dev proc sys run; do mkdir -p "$ROOTFS/$d"; done
 mount --bind /dev "$ROOTFS/dev"; MOUNTS+=("$ROOTFS/dev")
 mount --bind /dev/pts "$ROOTFS/dev/pts"; MOUNTS+=("$ROOTFS/dev/pts")
@@ -50,7 +54,9 @@ mount -t proc proc "$ROOTFS/proc"; MOUNTS+=("$ROOTFS/proc")
 mount -t sysfs sysfs "$ROOTFS/sys"; MOUNTS+=("$ROOTFS/sys")
 mount --bind /run "$ROOTFS/run"; MOUNTS+=("$ROOTFS/run")
 
-cp -L /etc/resolv.conf "$ROOTFS/etc/resolv.conf"
+# Replace any dangling/live-image resolv.conf symlink with a regular file.
+rm -f "$ROOTFS/etc/resolv.conf"
+install -m 0644 "$WORK_DIR/resolv.conf" "$ROOTFS/etc/resolv.conf"
 chroot "$ROOTFS" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get update
 chroot "$ROOTFS" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   plank papirus-icon-theme arc-theme xfce4-whiskermenu-plugin

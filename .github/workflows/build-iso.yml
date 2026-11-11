@@ -24,6 +24,9 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
+      - name: Validate build script syntax
+        run: bash -n ./build-iso.sh
+
       - name: Install build dependencies
         run: |
           sudo apt-get update

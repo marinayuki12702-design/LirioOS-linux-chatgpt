@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -eu
+
+# Runs inside the user's XFCE session, so xfconf-query applies to this user.
+BG="/usr/share/backgrounds/liroos/liroos-lavender.svg"
+
+if command -v xfconf-query >/dev/null 2>&1; then
+  xfconf-query -c xsettings -p /Net/ThemeName -s "Arc-Dark" 2>/dev/null || true
+  xfconf-query -c xsettings -p /Net/IconThemeName -s "Papirus" 2>/dev/null || true
+  xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-image -s "$BG" 2>/dev/null || true
+fi
+
+if command -v plank >/dev/null 2>&1; then
+  (pgrep -x plank >/dev/null 2>&1 || plank) &
+fi
+
+exit 0

@@ -42,10 +42,15 @@ jobs:
           sudo rm -f /etc/apt/sources.list
           sudo rm -rf /var/lib/apt/lists/*
           sudo apt-get -o Acquire::Retries=3 -o Acquire::https::Timeout=20 update
-          # Package indexes were fetched successfully from kernel.org; install all
-          # dependencies from that same configured Ubuntu mirror (no extra host lookup).
+          # Install xorriso directly from the same Ubuntu mirror whose indexes
+          # were fetched above. APT currently reports no candidate for this package.
+          curl --fail --location --retry 3 --retry-all-errors \
+            https://mirrors.edge.kernel.org/ubuntu/pool/main/libi/libisoburn/xorriso_1.5.6-1.1ubuntu3_amd64.deb \
+            --output /tmp/xorriso.deb
+          dpkg-deb --info /tmp/xorriso.deb >/dev/null
           sudo apt-get -o Acquire::Retries=3 -o Acquire::https::Timeout=20 install -y \
-            xorriso squashfs-tools rsync curl
+            /tmp/xorriso.deb squashfs-tools rsync curl
+          xorriso -version
 
       - name: Download and verify Linux Mint XFCE
         env:

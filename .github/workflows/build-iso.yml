@@ -30,15 +30,19 @@ jobs:
       - name: Install build dependencies
         run: |
           set -euo pipefail
-          # GitHub-hosted Ubuntu runners may configure an Azure mirrorlist.
-          # Use the canonical Ubuntu archive directly to avoid a broken mirror DNS entry.
-          if [[ -f /etc/apt/sources.list.d/ubuntu.sources ]]; then
-            sudo sed -i 's|mirror+file:/etc/apt/apt-mirrors.txt|http://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
-            sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|http://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
-          fi
+          # Replace runner mirror configuration with a different public Ubuntu mirror.
+          # The previous run showed DNS failures for archive.ubuntu.com.
+          sudo tee /etc/apt/sources.list.d/ubuntu.sources > /dev/null <<'EOF'
+          Types: deb
+          URIs: https://mirrors.edge.kernel.org/ubuntu
+          Suites: noble noble-updates noble-backports noble-security
+          Components: main restricted universe multiverse
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+          EOF
+          sudo rm -f /etc/apt/sources.list
           sudo rm -rf /var/lib/apt/lists/*
-          sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 update
-          sudo apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y \
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::https::Timeout=20 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::https::Timeout=20 install -y \
             xorriso squashfs-tools rsync curl
 
       - name: Download and verify Linux Mint XFCE

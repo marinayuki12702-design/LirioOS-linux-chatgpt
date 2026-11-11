@@ -58,8 +58,30 @@ mount --bind /run "$ROOTFS/run"; MOUNTS+=("$ROOTFS/run")
 # Replace any dangling/live-image resolv.conf symlink with a regular file.
 rm -f "$ROOTFS/etc/resolv.conf"
 install -m 0644 "$WORK_DIR/resolv.conf" "$ROOTFS/etc/resolv.conf"
-chroot "$ROOTFS" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get update
-chroot "$ROOTFS" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+# GitHub-hosted runners can have brief DNS/network hiccups. Retry APT
+# operations instead of failing the whole ISO build on the first timeout.
+retry_apt() {
+  local attempt=1
+  until "$@"; do
+    if (( attempt >= 4 )); then
+      echo "ERROR: APT command failed after ${attempt} attempts: $*" >&2
+      return 1
+    fi
+    echo "APT network operation failed; retrying in ${attempt}s (attempt $((attempt + 1))/4)..." >&2
+    sleep "$attempt"
+    attempt=$((attempt + 1))
+  done
+}
+
+APT_RETRY_OPTS=(
+  -o Acquire::Retries=5
+  -o Acquire::http::Timeout=30
+  -o Acquire::https::Timeout=30
+)
+retry_apt chroot "$ROOTFS" /usr/bin/env DEBIAN_FRONTEND=noninteractive \
+  apt-get "${APT_RETRY_OPTS[@]}" update
+retry_apt chroot "$ROOTFS" /usr/bin/env DEBIAN_FRONTEND=noninteractive \
+  apt-get "${APT_RETRY_OPTS[@]}" install -y --no-install-recommends \
   plank papirus-icon-theme arc-theme xfce4-whiskermenu-plugin
 chroot "$ROOTFS" apt-get clean
 rm -rf "$ROOTFS/var/lib/apt/lists/"*

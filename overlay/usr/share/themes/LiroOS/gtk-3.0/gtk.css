@@ -1,0 +1,18 @@
+/* LiroOS GTK3 accent palette */
+@define-color liro_lavender #DCCBFA;
+@define-color liro_white #FFFFFF;
+@define-color liro_purple #A832E8;
+@define-color liro_dark #29252F;
+
+*:selected,
+*:selected:focus {
+  background-color: @liro_purple;
+  color: @liro_white;
+}
+
+button.suggested-action,
+button.default,
+.selection-mode {
+  background-color: @liro_purple;
+  color: @liro_white;
+}
